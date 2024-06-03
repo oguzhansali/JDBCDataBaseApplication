@@ -9,6 +9,9 @@ public class Main {
         //Veritabanı bağlantısı için Connection nesnesi tanımlanıyor.
         Connection connect =null;
 
+        //Veritabanında veri çekmek için SQL sorgusu oluşturuldu.
+        String sql="SELECT * FROM employees";
+
         try{
             //Veri tabanına bağlantı kuruluyr.
             connect=DriverManager.getConnection(DB_URL,DB_USER,DB_PASSWORD);
@@ -16,6 +19,10 @@ public class Main {
             connect.setAutoCommit(false);
             //INSERT SQL  komutu kullanılmak için PreapredStatment nesnesi oluşturuldu.
             PreparedStatement prSql = connect.prepareStatement("INSERT INTO employees(name,position,salary) VALUES(?,?,?) ");
+            //SELECT SQL komutunu çalıştırmak için Statement nesnesi oluşturuluyor.
+            Statement st = connect.createStatement();
+            //SQL sorgusu  ResultSet nesnesine atanıyor.
+            ResultSet data = st.executeQuery(sql);
 
             //Veriler giriliyor.
             prSql.setString(1,"Oğuz");
@@ -42,6 +49,14 @@ public class Main {
             prSql.setString(2,"Security");
             prSql.setInt(3,4000);
             prSql.executeUpdate();
+
+            while(data.next()) {//Veri tabanında çekilen veriler ekrana yazdırılıyor.
+                System.out.println("ID : " + data.getInt("id"));
+                System.out.println("Ad : " + data.getString("name"));
+                System.out.println("Pozisyon : " + data.getString("position"));
+                System.out.println("Maaş : " + data.getInt("salary"));
+                System.out.println("=====================");
+            }
 
 
             connect.commit();//İşlemler tamamlanınca veritabanına commit yapılıyor.
